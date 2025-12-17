@@ -1,147 +1,133 @@
 import streamlit as st
 
 # ページの設定
-st.set_page_config(page_title="LOEWE UPPM 逆引きツール", layout="centered")
+st.set_page_config(page_title="LOEWE UPPM 逆引き検索", layout="centered")
 
-# --- データ定義 ---
+# --- 1. シリーズ全体のストーリー解説 ---
+st.title("LOEWE Un Paseo Por Madrid")
+st.subheader("UPPM（マドリードへの散歩）コレクション")
+
+st.markdown("""
+**LOEWE Un Paseo Por Madrid (UPPM)** は、ロエベの歴史的な本拠地である**マドリードの活気あるライフスタイルと、多層的な文化**にインスパイアされたユニセックスフレグランスコレクションです。
+
+それぞれの香りが、スペインの首都マドリードの特定の場所、歴史的な瞬間、あるいは文化的な経験を呼び起こす「没入型の香りの旅」へと誘います。マドリードの街を散歩するように、香りを通じてその魅力を発見してください。
+---
+""")
+
+# --- 2. データ定義 ---
 perfumes = [
     {
         "name_jp": "ドーレ",
         "name_es": "Doré",
         "type": "スパイシー・ウッディ・アンバー",
-        "story": "映画館『シネ・ドレ』のアーカイブ上映から着想。パチョリ、シナモン、ミルラが響き合う魅力的な香り。",
+        "story": "マドリードの象徴的なモダニズム映画館『シネ・ドレ』の上映アーカイブから着想。心を揺さぶる魅力的な香り。",
         "ingredients": ["シナモン", "ミルラ", "バニラ", "ナツメグ", "ロエベ アコード", "パチョリ"]
     },
     {
         "name_jp": "シベレス",
         "name_es": "La Bella Cibeles",
         "type": "フローラル・フルーティ",
-        "story": "大地と豊穣のシンボル。シベレス広場の噴水のように情熱的で官能的なアイリスやローズの香り。",
+        "story": "大地と豊穣のシンボル。シベレス広場の噴水のように情熱的で、喜びと新鮮さにあふれた官能的な香り。",
         "ingredients": ["ベルガモット", "レモン", "ジャスミン", "アイリス", "ローズ", "オレンジブロッサム", "バイオレット", "キャロット", "バニラ", "パチョリ", "ムスク"]
     },
     {
         "name_jp": "デボー",
         "name_es": "Debod",
         "type": "フローラル・ウッディ・アンバー",
-        "story": "神秘的なデボー神殿。夕日の赤を表現したウードやサフラン、ローズの希少な香り。",
+        "story": "神秘的なデボー神殿の夕日。空と水面が魔法のような色に染まる瞬間を、希少なウードやサフランで表現。",
         "ingredients": ["ローズ", "ゼラニウム", "ジャスミン", "ラブダナム", "シプリオール", "ウード", "パチョリ", "ベチバー", "アンバー", "マンダリン", "ココナッツリーフ", "サフラン"]
     },
     {
         "name_jp": "マイリット",
         "name_es": "Mayrit",
         "type": "フローラル・ウッディ",
-        "story": "アラブ時代のマドリード。オレンジブロッサムやアンバーが漂う謎めいた歴史の記憶。",
+        "story": "9世紀のアラブ時代の呼称。要塞都市としての力強さと、オレンジブロッサムやアンバーの謎めいた香り。",
         "ingredients": ["オレンジブロッサム", "パッションフルーツ", "グレープフルーツ", "カルダモン", "ローズ", "ジャスミン", "アンバー", "サンダルウッド", "バニラ"]
     },
     {
         "name_jp": "オペラ",
         "name_es": "Ópera",
         "type": "フローラル・パウダリー・ウッディ",
-        "story": "宮廷文化のエレガンス。スズランやサンダルウッド、バニラが優雅に漂う夢見心地なひととき。",
+        "story": "フェリペ2世の宮廷文化。劇場や音楽の調べに包まれるような、スズランやバニラの甘く気品あるひととき。",
         "ingredients": ["ベルガモット", "スズラン", "フリージア", "ローズ", "ジャスミン", "バニラ", "ベンゾイン", "ベチバー", "サンダルウッド", "ムスク"]
     },
     {
         "name_jp": "ロサレダ",
         "name_es": "Rosaleda",
         "type": "フローラル・スパイシー",
-        "story": "レティーロ公園のバラ園。ローズオットーが主役の華やかな庭園のシンフォニー。",
+        "story": "レティーロ公園のバラ園。水連の池やニンフに見守られた、ローズオットーが主役の華やかな庭園のシンフォニー。",
         "ingredients": ["ベルガモット", "ビターオレンジ", "アップル", "ピーチ", "バイオレット", "サンバックジャスミン", "ローズオットー", "ダマスクローズ", "ネロリ", "シダー", "アンバー", "ムスク"]
     },
     {
         "name_jp": "サン・ミゲル",
         "name_es": "San Miguel",
         "type": "フローラル・ウッディ",
-        "story": "活気あるサン・ミゲル市場。ローズ、パチョリ、アンバーが混ざり合うエネルギッシュな香り。",
+        "story": "歴史あるサン・ミゲル市場。活気あふれる市場の色と香りが混ざり合う、エネルギッシュで情熱的な香り。",
         "ingredients": ["ベルガモット", "バイオレット", "ゼラニウム", "ローズエキス", "ダバナ", "パチョリ", "ベチバー", "アンバー", "トルーバルサム"]
     },
     {
         "name_jp": "プラド",
         "name_es": "Prado",
         "type": "アロマティック・ウッディ・アンバー",
-        "story": "プラド美術館へのオマージュ。カモミールやセージが織りなす楽園のような調和。",
+        "story": "プラド美術館と『草原』へのオマージュ。風景画のように調和のとれた、カモミールやセージが織りなす休息の香り。",
         "ingredients": ["カモミール", "クラリセージ", "カシス", "ライチ", "ロエベ アコード"]
     },
     {
         "name_jp": "カサ・デ・カンポ",
         "name_es": "Casa de Campo",
         "type": "ウッディ・フローラル・ムスキー",
-        "story": "市民の憩いの場。アルテミシアやサンダルウッドが自然の中での休息を想起させます。",
+        "story": "かつての王室狩猟地、現在は市民のオアシス。樹木と水に囲まれた、自然の中での安らぎを想起させる香り。",
         "ingredients": ["グリーンマンダリン", "ブラッドオレンジ", "アルテミシア", "サンダルウッド", "ムスク", "ロエベ アコード"]
     }
 ]
 
-# --- 類義語辞書の定義 ---
-# 「ユーザーが入力しそうな言葉」: 「データ上の正式名称」
+# --- 3. 類義語辞書と検索機能 ---
 SYNONYMS = {
     "バラ": "ローズ", "薔薇": "ローズ", "rose": "ローズ",
     "ヨモギ": "アルテミシア", "よもぎ": "アルテミシア",
     "蜜柑": "マンダリン", "みかん": "マンダリン",
-    "白檀": "サンダルウッド",
-    "乳香": "フランキンセンス",
-    "麝香": "ムスク",
+    "白檀": "サンダルウッド", "麝香": "ムスク",
     "菫": "バイオレット", "すみれ": "バイオレット",
-    "菖蒲": "アイリス",
     "パチュリ": "パチョリ"
 }
 
-# 検索用の関数
 def normalize_search_term(term):
     term = term.strip().lower()
-    # 辞書にあれば変換、なければそのまま返す
     return SYNONYMS.get(term, term)
 
-# --- UI構築 ---
-st.title("LOEWE UPPM 逆引き検索")
-st.markdown("マドリードを巡る香りの旅。お好みの香料から探せます。")
+# --- 4. メイン画面の検索窓 ---
+st.write("### 🔍 香料から香水を探す")
+search_query = st.text_input(
+    "好きな香料を自由に入力してください", 
+    placeholder="例：バラ、バニラ、サンダルウッドなど",
+    help="『バラ』と入力すると『ローズ』を含む香水もヒットします。"
+)
 
-# サイドバー：検索機能
-st.sidebar.header("香料で検索")
-search_query = st.sidebar.text_input("例：バラ、バニラ、サンダルウッド", help="類義語（バラ＝ローズなど）にも対応しています")
+# --- 5. 検索結果の表示 ---
+query_term = normalize_search_term(search_query) if search_query else ""
 
-# 全香料リスト（選択式も残す）
-all_ingredients = sorted(list(set([ing for p in perfumes for ing in p["ingredients"]])))
-selected_ings = st.sidebar.multiselect("リストから選択", options=all_ingredients)
-
-# --- 検索ロジック ---
-# テキスト入力と選択肢の両方を統合
-query_terms = []
-if search_query:
-    query_terms.append(normalize_search_term(search_query))
-if selected_ings:
-    query_terms.extend(selected_ings)
-
-# 表示
-if query_terms:
-    st.subheader(f"検索条件: {', '.join(query_terms)}")
+if query_term:
+    st.write(f"「**{search_query}**」の検索結果：")
     found_any = False
-    
     for p in perfumes:
-        # 香水に含まれる全香料を1つの文字列にして、部分一致を確認
-        p_ingredients_str = "".join(p["ingredients"]).lower()
-        
-        # 検索語のいずれかが含まれているかチェック
-        match = False
-        for term in query_terms:
-            if term in p_ingredients_str:
-                match = True
-                break
-        
-        if match:
+        # 香料リストを文字列化して検索
+        all_ings_str = "".join(p["ingredients"]).lower()
+        if query_term in all_ings_str:
             found_any = True
             with st.expander(f"✨ {p['name_jp']} ({p['name_es']})"):
                 st.write(f"**【香調】** {p['type']}")
                 st.write(f"**【物語】** {p['story']}")
                 st.write(f"**【主要香料】** {', '.join(p['ingredients'])}")
-                
     if not found_any:
-        st.info("該当する香水は見つかりませんでした。")
+        st.warning("該当する香水が見つかりませんでした。他のキーワードでお試しください。")
 else:
-    st.subheader("コレクション一覧")
+    # 検索していない時は全リストを表示
+    st.write("### 📜 コレクション一覧")
     for p in perfumes:
         with st.expander(f"{p['name_jp']} ({p['name_es']})"):
             st.write(f"**香調:** {p['type']}")
             st.write(f"**ストーリー:** {p['story']}")
-            st.caption(f"香料: {', '.join(p['ingredients'])}")
+            st.caption(f"主要香料: {', '.join(p['ingredients'])}")
 
-st.sidebar.markdown("---")
-st.sidebar.info("類義語を自動で判別します。")
+st.markdown("---")
+st.caption("LOEWE Un Paseo Por Madrid Database | 全9種類")
